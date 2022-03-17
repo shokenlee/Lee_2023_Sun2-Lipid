@@ -16,12 +16,21 @@ gaussian_sigma = 1;
 
 // 3. Autothreshold method
 method = "Li"
+min_area_of_roi = 50;
+max_area_of_roi = 500;
 
+// 4. How many times of erosion to be done to make a mask for nuclear area inside the rim
+erosion_repeats = 3;
+
+// 5. Measurement items in "Set measurement"
+measured_values = "area mean min centroid";
 
 // Get the directory
 dataFolder = getDirectory("Choose the folder you want to process");
 
-// Make a file list and repeat the analysis
+
+// ---- Measurement ---
+// Make a file list and repeat the analysis for all images in the directory
 filelist = getFileList(dataFolder);
 for (i = 0; i < lengthOf(filelist); i++) {
     file = filelist[i];
@@ -31,6 +40,9 @@ for (i = 0; i < lengthOf(filelist); i++) {
         run("Close All");
     } 
 }
+
+// --- Functions ---
+// --- Primary functions ---
 
 function doAnalysis(file) { 
 	// Open a file and perform analysis for all nuclei
@@ -51,13 +63,8 @@ function doAnalysis(file) {
 		// Show counter
 		print(i + "out of " + n_of_nuclei + " nuclei being in analysis...");
 
-		
 		// Clean up results and ROI manager
-		run("Clear Results");
-		if (roiManager("count") != 0) {
-			roiManager("deselect");
-			roiManager("delete");
-		};
+		Clear_Results_ROImanager();
 		
 		// Define cropping area manually and duplicate the image of the area
 		waitForUser("Crop the area of interest");
@@ -73,7 +80,7 @@ function doAnalysis(file) {
 		// Analyze particle, ROIs defined - Skip
 		selectWindow("Binary");
 		run("Set Measurements...", "area mean min centroid redirect=" + "Cropped" +" decimal=3");
-		run("Analyze Particles...", "size=" + 50 + "-" + 500 + "exclude include add");
+		run("Analyze Particles...", "size=" + min_area_of_roi + "-" + max_area_of_roi + "exclude include add");
 
 		// Judges if a ROI wrapping the nucleus was created
 		// If not, just save the cropped image and go to next
@@ -83,7 +90,7 @@ function doAnalysis(file) {
 			roiManager("Show None");
 			roiManager("Show All with labels");
 			run("Flatten");
-			saveAs(save_format, dataFolder + file + "_" + i+1);
+			saveAs(save_format, dataFolder + file + "_" + i);
 			
 			//// Instead, draw a circle
 			//waitForUser("Draw a circle");
@@ -95,24 +102,22 @@ function doAnalysis(file) {
 			roiManager("select", roi_of_interest-1);
 			run("Create Mask");
 			selectWindow("Mask");
-			run("Erode");
-			run("Erode");
-			run("Erode");
+			for (j = 0; j < erosion_repeats; j++) {
+				run("Erode");
+			}
 			run("Divide...", "value=255");
 			run("16-bit");
 			
 			// Measure within ROI
-			run("Set Measurements...", "area mean min centroid redirect=Cropped decimal=3");
-			roiManager("deselect");
-			roiManager("measure");
+			measure_in_ROI("Cropped", measured_values);
+//			run("Set Measurements...", "area mean min centroid redirect=Cropped decimal=3");
+//			roiManager("deselect");
+//			roiManager("measure");
 			
 			// Store the values to the array T1, A1, M1
 			A1 = getResult("Area", roi_of_interest-1);
 			M1 = getResult("Mean", roi_of_interest-1);
 			T1 = A1* M1;
-			print("A1", A1);
-			print("M1", M1);
-			
 			
 			// Measure total intensity of binary images within ROIs, which is equal to the intra-nuclear area A2
 			run("Clear Results");
@@ -180,10 +185,23 @@ function doAnalysis(file) {
 }
 
 
+// --- Secondary functions ---
 
+function Clear_Results_ROImanager() { 
+	// Clean up the result table and ROI manager
+	run("Clear Results");
+	if (roiManager("count") != 0) {
+		roiManager("deselect");
+		roiManager("delete");
+	};
+}
 
-
-
+function measure_in_ROI(imageName, measured_values) { 
+	// Perform
+	run("Set Measurements...", measured_values + " redirect=" + imageName +" decimal=3");
+	roiManager("deselect");
+	roiManager("measure");
+}
 
 
 
