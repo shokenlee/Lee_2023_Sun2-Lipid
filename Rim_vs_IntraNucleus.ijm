@@ -9,7 +9,7 @@ file_format = "nd2";
 save_format = "tif";
 
 // 1. Background value based on manual measurement
-background = 110;
+background = 112;
 
 // 2. Gaussian blur sigma
 gaussian_sigma = 1;
