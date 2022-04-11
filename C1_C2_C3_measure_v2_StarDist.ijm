@@ -14,10 +14,10 @@ save_format = "tif";
 // 2. selecet chennels for ROI definition (typically C1 with nuclei) and for the target that is going to be saved as a tif file with ROIs
 dapi_channel = "C1";
 
-//tag_channel = "C2";
-//target_channel = "C3";
+tag_channel = "C2";
+target_channel = "C3";
 
-target_channel = "C2";
+//target_channel = "C2";
 
 ROI_channel = dapi_channel;
 
@@ -115,8 +115,8 @@ function measure_tag_and_target() {
 	// 1. get means from DAPI
 	means_dapi = getMeans(dapi_channel);
 
-//	// 2. get means from tag
-//	means_tag = getMeans(tag_channel);
+	// 2. get means from tag
+	means_tag = getMeans(tag_channel);
 
 	// 3. redirect measurement to target
 	run("Set Measurements...", "area mean shape redirect=" + target_channel + " decimal=3");
@@ -130,10 +130,10 @@ function measure_tag_and_target() {
 		setResult("DAPI mean", i, means_dapi[i]);
 	}
 
-//	// 6. add the tag channel mean data to the results
-//	for (i = 0; i < nResults; i++) {
-//		setResult("Tag mean", i, means_tag[i]);
-//	}
+	// 6. add the tag channel mean data to the results
+	for (i = 0; i < nResults; i++) {
+		setResult("Tag mean", i, means_tag[i]);
+	}
 	
 	// 7. add the file name to the results table
 	for (i = 0; i < nResults; i++) {
