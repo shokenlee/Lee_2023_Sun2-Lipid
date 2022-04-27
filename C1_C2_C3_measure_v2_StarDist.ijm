@@ -1,5 +1,6 @@
 
-// --- This code is for measuring measuring nucleus (C1), tag(C2) and target (C3) intensity within nuclear (C1) area
+// --- This code is for measuring measuring 
+// nucleus (C1), tag(C2) and target (C3) intensity within nuclear (C1) area
 
 // --- last update: 2/18/22
 
@@ -11,15 +12,21 @@ print("\\Clear");
 file_format = "nd2";
 save_format = "tif";
 
-// 2. selecet chennels for ROI definition (typically C1 with nuclei) and for the target that is going to be saved as a tif file with ROIs
+// 2. selecet chennels for ROI definition (typically C1 with nuclei) and 
+// for the target that is going to be saved as a tif file with ROIs
 dapi_channel = "C1";
 
+// When images have only two channels, comment this out
 tag_channel = "C2";
 target_channel = "C3";
 
-//target_channel = "C2";
+// // When images have only two channels, use this line
+target_channel = "C2";
 
 ROI_channel = dapi_channel;
+
+// 3. Gaussian blur sigma
+gaussian_sigma = 1;
 
 // ------- Actual processing -------
 
@@ -101,7 +108,13 @@ function createSegmentation_StarDist() {
 	// Make a segmented binary image and ROIs
 
 	// 1. Make a segmented image by StarDist 2D
-	// with input channel being the nucleus channel
+	// with the default setting
+	// with input channel being the dapi channel
+	
+	// When needed Gaussian blur is performed
+//	selectWindow(dapi_channel);
+//	run("Gaussian Blur...", "sigma=" + gaussian_sigma);
+	
 	run("Command From Macro", "command=[de.csbdresden.stardist.StarDist2D], \nargs=['input':" + dapi_channel +", 'modelChoice':'Versatile (fluorescent nuclei)', 'normalizeInput':'true', 'percentileBottom':'1.0', 'percentileTop':'99.8', 'probThresh':'0.5', 'nmsThresh':'0.4', 'outputType':'Both', 'nTiles':'1', 'excludeBoundary':'2', 'roiPosition':'Automatic', 'verbose':'false', 'showCsbdeepProgress':'false', 'showProbAndDist':'false'], process=[false]");
 
 }
@@ -112,11 +125,12 @@ function measure_tag_and_target() {
 	// Then save them to CSV
 	// Finally save image with ROI displayed to tif
 
-	// 1. get means from DAPI
+	// 1. get means from DAPI using "getMeans" function defined below
 	means_dapi = getMeans(dapi_channel);
 
 	// 2. get means from tag
-	means_tag = getMeans(tag_channel);
+	// When target = C2, comment this out
+//	means_tag = getMeans(tag_channel);
 
 	// 3. redirect measurement to target
 	run("Set Measurements...", "area mean shape redirect=" + target_channel + " decimal=3");
@@ -131,9 +145,10 @@ function measure_tag_and_target() {
 	}
 
 	// 6. add the tag channel mean data to the results
-	for (i = 0; i < nResults; i++) {
-		setResult("Tag mean", i, means_tag[i]);
-	}
+	// When target = C2, comment this out
+//	for (i = 0; i < nResults; i++) {
+//		setResult("Tag mean", i, means_tag[i]);
+//	}
 	
 	// 7. add the file name to the results table
 	for (i = 0; i < nResults; i++) {
