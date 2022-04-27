@@ -92,10 +92,6 @@ function doAnalysis(file) {
 			run("Flatten");
 			saveAs(save_format, dataFolder + file + "_" + i);
 			
-			//// Instead, draw a circle
-			//waitForUser("Draw a circle");
-			//roiManager("Add");
-			//roiManager("Show All with labels");
 			
 			// Make a mask for extracting internal nuclei
 			roi_of_interest = getNumber("Give the ROI number", 0);
@@ -110,10 +106,7 @@ function doAnalysis(file) {
 			
 			// Measure within ROI
 			measure_in_ROI("Cropped", measured_values);
-//			run("Set Measurements...", "area mean min centroid redirect=Cropped decimal=3");
-//			roiManager("deselect");
-//			roiManager("measure");
-			
+
 			// Store the values to the array T1, A1, M1
 			A1 = getResult("Area", roi_of_interest-1);
 			M1 = getResult("Mean", roi_of_interest-1);
