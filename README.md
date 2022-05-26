@@ -12,7 +12,7 @@ Two sets of codes for measuring:
 
 Performed in **Figure 1**. Image anaylysis was performed by ImageJ Macro as depicted below:
 
-![Image](/assets/firstglance_image2.png)
+![Image](/assets/Scheme_NE_en_score.png)
 
 Then, the resulting spreadsheets were concatenated and further analyzed using the Python code.
 
