@@ -19,3 +19,5 @@ Then, the resulting spreadsheets were concatenated and further analyzed using th
 ## Protein abundacne in nucleus area (e.g. Sun2)
 
 Performed in **Figures 2 and S2**. Staining intensity of the protein of interest within nucleus area was measured by ImageJ Macro. Nucleus are was defined using StarDist plugin. Then, the resulting spreadsheets were concatenated and further analyzed using the Python code.
+
+![Image2](/assets/Scheme_Nuclear_abundance.png)
