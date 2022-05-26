@@ -12,6 +12,8 @@ Two sets of codes for measuring:
 
 Performed in **Figure 1**. Image anaylysis was performed by ImageJ Macro as depicted below:
 
+/assets/firstglance_image2.png
+
 Then, the resulting spreadsheets were concatenated and further analyzed using the Python code.
 
 ## Protein abundacne in nucleus area (e.g. Sun2)
