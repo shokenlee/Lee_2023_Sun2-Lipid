@@ -1,10 +1,11 @@
 # Overview
----
 
-* This is for Lee et al. 2022
+* This is the source code for Lee et al. 2022
 
-* Composed with two codes: ImageJ Macro and Jupyter Notebook
+* Composed with two codes:
+- NE enrichment score
+- Protein abundance in nucleus area (e.g. Sun2)
 
-**ImageJ Macro**
+## NE enrichment score
 
-**Jupyter Notebook**
+## Protein abundacne in nucleus area (e.g. Sun2)
