@@ -1,8 +1,8 @@
 # Overview
 
-* This is the source code for Lee et al. 2022
+This is the source code for Lee et al. 2022
 
-* Composed with two codes:
+Two sets of codes for measuring:
 - NE enrichment score
 - Protein abundance in nucleus area (e.g. Sun2)
 
