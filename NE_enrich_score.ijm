@@ -1,5 +1,6 @@
-// For quantifying nuclear rim vs intra-nucleus ratio of the given signal
-// Primarily for NLS-DAG sensor
+// For quantifying "NE enrichment score"
+// , which is nuclear rim vs intra-nucleus ratio of the given signal
+// Primarily used for the INM-DAG sensor
 
 print("\\Clear");
 
@@ -19,10 +20,10 @@ method = "Li"
 min_area_of_roi = 50;
 max_area_of_roi = 500;
 
-// 4. How many times of erosion to be done to make a mask for nuclear area inside the rim
+// 4. How many times of erosion to be done to make a "Intra-nucleus" mask
 erosion_repeats = 3;
 
-// 5. Measurement items in "Set measurement"
+// 5. Measured items in "Set measurement"
 measured_values = "area mean min centroid";
 
 // Get the directory
@@ -36,7 +37,7 @@ for (i = 0; i < lengthOf(filelist); i++) {
     file = filelist[i];
     if (endsWith(file, file_format)) { 
         doAnalysis(file);
-        print('Done: ' + file);
+        print("Done: " + file);
         run("Close All");
     } 
 }
@@ -52,7 +53,7 @@ function doAnalysis(file) {
 	waitForUser("Count how many nuclei you have to analyze");
 	n_of_nuclei = getNumber("How many nuclei do you want to analyze?", 0);
 	
-	// Make arrays to which values are stored
+	// Make arrays, which measured values are going to be stored in
 	Areas = newArray(n_of_nuclei);
 	Means_whole = newArray(n_of_nuclei);
 	Means_inside = newArray(n_of_nuclei);
@@ -68,7 +69,7 @@ function doAnalysis(file) {
 		
 		// Define cropping area manually and duplicate the image of the area
 		waitForUser("Crop the area of interest");
-		run("Duplicate...", "title=Cropped"); // this is the image on which measurement is based
+		run("Duplicate...", "title=Cropped"); // this is the "Whole nucleus" image that upcoming measurement works on
 		
 		// Autothreshold to make a binary image
 		run("Duplicate...", "title=Binary"); // this is going to be a binary image for ROI and mask generation
@@ -77,14 +78,21 @@ function doAnalysis(file) {
 		run("Auto Threshold", "method=" + method + " white");
 		
 		
-		// Analyze particle, ROIs defined - Skip
+		// Analyze particle, ROI(s) defined
 		selectWindow("Binary");
 		run("Set Measurements...", "area mean min centroid redirect=" + "Cropped" +" decimal=3");
 		run("Analyze Particles...", "size=" + min_area_of_roi + "-" + max_area_of_roi + "exclude include add");
 
 		// Judges if a ROI wrapping the nucleus was created
-		// If not, just save the cropped image and go to next
-		if (roiManager("count") != 0) {
+		if (roiManager("count") == 0) {
+			// case 1: ROI was not found
+			// No measurement is performed, just save the image and go to another nucleus
+			selectWindow("Cropped");
+			saveAs(save_format, dataFolder + file + "_" + i + "_Failed");
+		}
+		else {
+			// case 2: ROI was found. Perform measurement
+			
 			// Display ROIs on original image and save it
 			selectWindow("Cropped");
 			roiManager("Show None");
@@ -107,7 +115,7 @@ function doAnalysis(file) {
 			// Measure within ROI
 			measure_in_ROI("Cropped", measured_values);
 
-			// Store the values to the array T1, A1, M1
+			// Store the values of Area, Mean and Total intensity to new variables A1, M1, T1
 			A1 = getResult("Area", roi_of_interest-1);
 			M1 = getResult("Mean", roi_of_interest-1);
 			T1 = A1* M1;
@@ -120,11 +128,11 @@ function doAnalysis(file) {
 			M_mask = getResult("Mean", roi_of_interest-1);
 			A2 = A1 * M_mask;
 			
-			// Mask the Max-ed C1 by the binary image
+			// Mask the "Whole nucleus" by the binary image, to make "Intra nucleus"
 			imageCalculator("Multiply create", "Cropped","Mask");
 			
-			// Measure the masked images within ROIs, giving intra-nuclear intensity T2
-			// thus obtain M2 from T2 / A2
+			// Measure the masked images within ROIs, to obtain total intensity of Intra nucleus T2
+			// then obtain M2 by T2 / A2
 			selectWindow("Result of Cropped");
 			rename("Masked_cropped");
 			run("Set Measurements...", "area mean min centroid redirect=Masked_cropped decimal=3");
@@ -135,12 +143,12 @@ function doAnalysis(file) {
 			T2 = A1 * M2_fake;
 			M2_real = T2 / A2 - background;
 			
-			// Obtain T3 by T1-T2 and A3 by A1-A2, then M3 = T3 / A3
+			// Obtain values of nuclear rim, T3 by T1-T2 and A3 by A1-A2, then M3 = T3 / A3
 			T3 = T1 - T2;
 			A3 = A1 - A2;
 			M3 = T3 / A3 - background;
 			
-			// Obtain the ratio R = M3 / M2, then output as CSV
+			// Obtain the ratio, i.e., NE enrichment score R = M3 / M2
 			R = M3 / M2_real;
 		
 		    // Store the values to the arrays
@@ -151,18 +159,13 @@ function doAnalysis(file) {
 		    Ratios[i-1] = R;
 		}
 
-		else {
-			selectWindow("Cropped");
-			saveAs(save_format, dataFolder + file + "_" + i + "_Failed");
-		}
-		
 	    // Close all images other than the original image
 		selectWindow(file);
 		close("\\Others");
 	}
 	
 	
-	// Store the values to CSV
+	// Now all the desired nuclei are measured from the given image, store the values to CSV
 	run("Clear Results");
 	for (i = 0; i < n_of_nuclei; i++) {
 	    setResult("FileName", i, file);
