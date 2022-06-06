@@ -2,8 +2,6 @@
 // --- This code is for measuring measuring 
 // nucleus (C1), tag(C2) and target (C3) intensity within nuclear (C1) area
 
-// --- last update: 2/18/22
-
 setBatchMode(true);
 print("\\Clear");
 
