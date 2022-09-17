@@ -19,7 +19,7 @@ tag_channel = "C2";
 target_channel = "C3";
 
 // // When images have only two channels, use this line
-target_channel = "C2";
+//target_channel = "C2";
 
 ROI_channel = dapi_channel;
 
@@ -127,8 +127,8 @@ function measure_tag_and_target() {
 	means_dapi = getMeans(dapi_channel);
 
 	// 2. get means from tag
-	// When target = C2, comment this out
-//	means_tag = getMeans(tag_channel);
+//	When target = C2, comment this out
+	means_tag = getMeans(tag_channel);
 
 	// 3. redirect measurement to target
 	run("Set Measurements...", "area mean shape redirect=" + target_channel + " decimal=3");
@@ -144,9 +144,9 @@ function measure_tag_and_target() {
 
 	// 6. add the tag channel mean data to the results
 	// When target = C2, comment this out
-//	for (i = 0; i < nResults; i++) {
-//		setResult("Tag mean", i, means_tag[i]);
-//	}
+	for (i = 0; i < nResults; i++) {
+		setResult("Tag mean", i, means_tag[i]);
+	}
 	
 	// 7. add the file name to the results table
 	for (i = 0; i < nResults; i++) {
