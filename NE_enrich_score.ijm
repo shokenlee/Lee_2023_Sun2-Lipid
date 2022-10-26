@@ -48,6 +48,7 @@ for (i = 0; i < lengthOf(filelist); i++) {
 function doAnalysis(file) { 
 	// Open a file and perform analysis for all nuclei
 	open(file);
+	rename(file);
 	
 	// Count and define how many nuclei you have to analyze
 	waitForUser("Count how many nuclei you have to analyze");

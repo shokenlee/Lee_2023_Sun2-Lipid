@@ -16,8 +16,8 @@ save_format = "tif";
 dapi_channel = "C1";
 
 // When images have only two channels, comment this out
-bodipy_channel = "C2";
-target_channel = "C3";
+bodipy_channel = "C3";
+target_channel = "C2";
 
 ROI_channel = dapi_channel;
 
@@ -154,8 +154,16 @@ function maxProject_then_splitChannels() {
 	
 	// 2. Max intesity Z project
 	waitForUser("Decide Z project start and end points!");
-	z_start = getNumber("Where Z section should start?", 1);
-	z_end = getNumber("Where Z section should end?", 1);
+	
+	z_start = getNumber("Where Z section should start?", 0);
+	if (z_start == 0) {
+		z_start = getNumber("Where Z section should start?", 0);
+	}
+	z_end = getNumber("Where Z section should end?", 0);
+	if (z_end == 0) {
+		z_end = getNumber("Where Z section should start?", 0);
+	}
+	
 	run("Z Project...", "start=" + z_start + " stop=" + z_end + " projection=[Max Intensity]");
 	maxProjectedImage = getTitle();
 	
@@ -206,6 +214,7 @@ function segmentLD(channel){
 	
 	// Segment
 	run("Auto Threshold", "method=" + thresholdMethod_BODIPY + " white");
+	run("Watershed");
 	rename(LD_segmented);
 	run("Duplicate...", " ");
 	
