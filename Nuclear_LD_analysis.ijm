@@ -5,6 +5,7 @@
 //setBatchMode(true);
 //run("Colors...", "foreground=black background=black selection=pink");
 print("\\Clear");
+Clear_ROImanager();
 
 // --------- Parameters -----------
 // 1. file formats
@@ -16,8 +17,8 @@ save_format = "tif";
 dapi_channel = "C1";
 
 // When images have only two channels, comment this out
-bodipy_channel = "C3";
-target_channel = "C2";
+bodipy_channel = "C2";
+target_channel = "C3";
 
 ROI_channel = dapi_channel;
 
@@ -27,7 +28,7 @@ LD_segmented = "LD_segmented";
 // 3. Settings for autothreshold
 // 3-1. Set Gaussian blur sigma and auto threshold method
 gaussian_blur_sigma = 2;
-thresholdMethod_nucleus = "Li"
+thresholdMethod_nucleus = "Li";
 thresholdMethod_BODIPY = "Otsu";
 
 // 3-2. Set the min and max area of ROIs that are included into the 
@@ -43,8 +44,8 @@ watershed = "Yes";
 //watershed = "No";
 
 // 3-4. Choose if nuclear ROI on image edge is exluded or not. If yes, place " exclude". If no, place "" (blank)
-exclude_or_not = " exclude"
-//exclude_or_not = ""
+exclude_or_not = " exclude";
+//exclude_or_not = "";
 
 
 // ------- Actual processing -------
@@ -294,4 +295,12 @@ function saveImageWithROIs(channel) {
 	run("Flatten");
 	file_wo_format = replace(file, ".nd2", "");
 	saveAs(save_format, dataFolder + file_wo_format + "_" + channel);
+}
+
+function Clear_ROImanager() { 
+	// Clean up ROI manager
+	if (roiManager("count") != 0) {
+		roiManager("deselect");
+		roiManager("delete");
+	};
 }
