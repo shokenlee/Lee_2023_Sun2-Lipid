@@ -36,7 +36,7 @@ dataFolder = getDirectory("Choose the folder you want to process");
 analyzeImageInFolder();
 
 // 3. Let you know the end of analysis for all data
-print('Finshed all analysis');
+print("Finshed all analysis");
 
 // --------- Functions -------------
 // ----- Top-level functions-----
@@ -131,7 +131,7 @@ function measure_tag_and_target() {
 	means_tag = getMeans(tag_channel);
 
 	// 3. redirect measurement to target
-	run("Set Measurements...", "area mean shape redirect=" + target_channel + " decimal=3");
+	run("Set Measurements...", "area mean redirect=" + target_channel + " decimal=3");
 	
 	// 4. measure mean in the target protein in all ROIs and ROI shape descriptors
 	roiManager("deselect");
@@ -160,7 +160,7 @@ function measure_tag_and_target() {
 	
 	// 9. Save the image with ROI
 	saveImageWithROIs(dapi_channel);
-	saveImageWithROIs(target_channel);
+//	saveImageWithROIs(target_channel);
 
 	// 10. Clear results and ROIs
 	run("Clear Results");
