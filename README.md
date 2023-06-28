@@ -1,6 +1,6 @@
-# Lee et al. 2022
+# Lee et al. 2023 J Cell Biol.
 
-Custom scripts for image analysis performed in Lee et al. 2022.
+Custom scripts for image analysis performed in Lee et al. 2023 J Cell Biol (doi: 10.1083/jcb.202304026).
 
 Written in ImageJ Macro and Python (Jupyter Notebook).
 
